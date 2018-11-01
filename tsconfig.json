@@ -1,0 +1,25 @@
+{
+  "exclude": [
+    "./src/app.js",
+    "./webpack.config.js",
+    "./dist"
+  ],
+  "include": [
+    "./src/server/**/*.ts"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src/server",
+    "outDir": "./dist/server",
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "target": "es2015",
+    "jsx": "react",
+    "lib": [
+      "es7",
+      "es2018",
+      "dom"
+    ],
+    "allowJs": true
+  }
+}

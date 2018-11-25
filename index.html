@@ -51,7 +51,7 @@
         .panel .header {
             width: 100%;
             background: aqua;
-            height: 130px;
+            height: 160px;
             cursor: pointer;
             border-bottom: 1px solid black;
         }
@@ -60,7 +60,7 @@
             box-sizing: border-box;
             position: absolute;
             overflow: auto;
-            height: calc(100% - 130px);
+            height: calc(100% - 160px);
         }
 
         .button {
@@ -108,15 +108,21 @@
     <div class="header">
         <div>
             <input class="pattern" onchange="updateResults()" placeholder="Hladať" type="text">
-            <input class="distance" max="99999" min="0" onchange="updateResults()" type="number" value="200">M.
+            <input class="distance" max="99999" min="0" onchange="updateResults()" type="number" value="200">m.
             <label for="showClusters">Zobraziť clustre: </label>
             <input checked id="showClusters" onchange="updateResults()" type="checkbox">
         </div>
         <div>
-            Max vzdialenosť:
-            <input class="parking" max="1000" min="0" onchange="updateResults()" type="number" value="0">M.
-            <label for="showCarParks">Zobraziť parkoviská: </label>
-            <input checked id="showCarParks" onchange="switchParkings(this.checked)" type="checkbox">
+            Max vzdialenosť od parkoviska:
+            <input class="parking" max="1000" min="0" onchange="updateResults()" type="number" value="0">m.
+        </div>
+        <div>
+            <label for="showCarParks">Parkoviská: </label>
+            <input checked id="showCarParks" onchange="switchParkings()" type="checkbox">
+            <label for="privateCarParks">Aj súkromné: </label>
+            <input id="privateCarParks" onchange="updateParkings()" type="checkbox">
+            <label for="buildingOnly">Iba s budovou: </label>
+            <input id="buildingOnly" onchange="updateParkings()" type="checkbox">
         </div>
         <div>
             <select class="itemType" id="inputItemType" onchange="updateResults()">

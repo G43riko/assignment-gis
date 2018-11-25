@@ -187,12 +187,96 @@ $.get("http://localhost:3000/stats", (response) => {
     }
 });
 
-window.switchParkings = (visible) => {
+window.switchParkings = () => {
+    const visible = document.getElementById("showCarParks").checked;
+
     map.setLayoutProperty("car_parks", "visibility", visible ? "visible" : "none");
 };
-window.switchClusters = (visible) => {
-    map.setLayoutProperty("cluster-count", "visibility", visible ? "visible" : "none");
-    map.setLayoutProperty("clusters", "visibility", visible ? "visible" : "none");
+
+window.updateParkings = () => {
+    const parameters = {
+        private: document.getElementById("privateCarParks").checked ? 1 : 0,
+        building: document.getElementById("buildingOnly").checked ? 1 : 0,
+    };
+
+    const params = Object.keys(parameters).map((key) => key + "=" + parameters[key]).join("&");
+    $.get("http://localhost:3000/carParks?" + params, (response) => {
+        if (Array.isArray(response.content)) {
+            const features = response.content.map((item) => {
+                return {
+                    "type": "Feature",
+                    "geometry": JSON.parse(item.way),
+                    "properties": {
+                        "title": "parking",
+                        "landuse": item.landuse,
+                        "building": item.building,
+                        "surface": item.surface,
+                        "access": item.access,
+                    }
+                };
+            });
+
+            if (map.getLayer("car_parks")) {
+                map.removeLayer("car_parks");
+                map.removeSource("car_parks");
+            }
+
+            map.addLayer({
+                "id": "car_parks",
+                "type": "fill",
+                "source": {
+                    "type": "geojson",
+                    "data": {
+                        "type": "FeatureCollection",
+                        "features": features
+                    }
+                },
+                "layout": {},
+                "paint": {
+                    "fill-color": "#088",
+                    "fill-opacity": 1
+                }
+            });
+
+            const popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
+
+            map.on("mouseenter", "car_parks", function (e) {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = "pointer";
+                const properties = e.features[0].properties;
+                let description = "<h3>Parkovisko</h3>";
+
+                if (utils.exists(properties.surface)) {
+                    description += `Povrch: <bold>${properties.surface} (${properties.surface})</bold><br>`;
+                }
+                if (utils.exists(properties.access)) {
+                    description += `Prístup: <bold>${utils.translate(properties.access)} (${properties.access})</bold><br>`;
+                }
+                if (utils.exists(properties.landuse)) {
+                    description += `Využitie krajny: <bold>${utils.translate(properties.landuse)} (${properties.landuse})</bold><br>`;
+                }
+                if (utils.exists(properties.building)) {
+                    description += `Budova: <bold>${utils.translate(properties.building)} (${properties.building})</bold><br>`;
+                }
+
+                popup.setLngLat([e.lngLat.lng, e.lngLat.lat])
+                    .setHTML(description)
+                    .addTo(map);
+            });
+
+            map.on("mousemove", "car_parks", (e) => {
+                popup.setLngLat([e.lngLat.lng, e.lngLat.lat]);
+            });
+
+            map.on("mouseleave", "car_parks", function () {
+                map.getCanvas().style.cursor = "";
+                popup.remove();
+            });
+        }
+    });
 };
 
 window.center = {
@@ -252,7 +336,6 @@ map.on("click", "points", (e) => {
     }
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${coordinates[0]},${coordinates[1]}.json?access_token=${token}&language=sk`;
     $.get(url, (response) => {
-        console.log(response);
         const splitAndTranslate = (key, divider = ",") => {
             return key.split(divider).map(utils.translate).join(divider);
         };
@@ -274,14 +357,14 @@ map.on("click", "points", (e) => {
             if (tmpAddress) {
                 tooltipContent += `Adresa: <bold>${tmpAddress}</bold><br>`;
             }
-            if (properties.operator) {
-                tooltipContent += `Operator: <bold>${properties.operator}</bold>`;
+            if (utils.exists(properties.operator)) {
+                tooltipContent += `Operator: <bold>${properties.operator}</bold><br>`;
             }
-            if (properties.brand) {
-                tooltipContent += `Značka: <bold>${properties.brand}</bold>`;
+            if (utils.exists(properties.brand)) {
+                tooltipContent += `Značka: <bold>${properties.brand}</bold><br>`;
             }
-            if (properties.ref) {
-                tooltipContent += `Referencia: <bold>${properties.ref}</bold>`;
+            if (utils.exists(properties.ref)) {
+                tooltipContent += `Referencia: <bold>${properties.ref}</bold><br>`;
             }
         }
         new mapboxgl.Popup()
@@ -477,6 +560,9 @@ const utils = {
         "wheelchair",
         "windmill",
         "zoo"],
+    exists(item) {
+        return item && typeof item === "string" && item.trim() !== "null";
+    },
     calcCrow(lat1, lon1, lat2, lon2) {
         const toRad = (Value) => Value * Math.PI / 180;
         const R = 6371; // km
@@ -502,6 +588,7 @@ const utils = {
         const translates = {
             "church": "cirkevné",
             "concert": "koncert",
+            "customers": "zákazníci",
             "gallery": "galéria",
             "historic": "historický",
             "hotel": "hotel",
@@ -999,7 +1086,7 @@ const mapOnLoad = () => {
                         "features": features
                     },
                     "cluster": document.getElementById("showClusters").checked,
-                    "clusterMaxZoom": 16, // Max zoom to cluster points on
+                    "clusterMaxZoom": 19, // Max zoom to cluster points on
                     "clusterRadius": 50 // Radius of each cluster when clustering points (defaults to 50)
                 },
                 "layout": {
@@ -1119,34 +1206,5 @@ map.on("load", () => {
         }
     });
     */
-    $.get("http://localhost:3000/carParks", (response) => {
-        if (Array.isArray(response.content)) {
-            const features = response.content.map((item) => {
-                return {
-                    "type": "Feature",
-                    "geometry": JSON.parse(item.way),
-                    "properties": {
-                        "title": "parking",
-                    }
-                }
-            });
-
-            map.addLayer({
-                "id": "car_parks",
-                'type': 'fill',
-                'source': {
-                    'type': 'geojson',
-                    "data": {
-                        "type": "FeatureCollection",
-                        "features": features
-                    }
-                },
-                'layout': {},
-                'paint': {
-                    'fill-color': '#088',
-                    "fill-opacity": 1
-                }
-            });
-        }
-    });
+    updateParkings();
 });

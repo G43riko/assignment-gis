@@ -44,7 +44,7 @@ export class Server {
             Server.send(res, DbConnection.getAllLines());
         });
         this.app.get("/carParks", (req, res) => {
-            Server.send(res, DbConnection.getCarParks());
+            Server.send(res, DbConnection.getCarParks(!!Number(req.query.private), !!Number(req.query.building)));
         });
         this.app.get("/roads", (req, res) => {
             Server.send(res, DbConnection.getAllRoads());

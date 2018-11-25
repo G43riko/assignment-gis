@@ -89,14 +89,20 @@ class ClassDbConnection {
             .from("stats"));
     }
 
-    public getCarParks(): Promise<any> {
-        return toPromise(knex.select(["way_area", st.asGeoJSON("way")])
-            .from("all_car_parks"));
+    public getCarParks(alsoPrivate: boolean, building: boolean): Promise<any> {
+        let query = knex.select(["way_area", "landuse", "building", "surface", "access", st.asGeoJSON("way")]);
+        if (!alsoPrivate) {
+            query = query.andWhere(knex.raw("(access != 'private' OR access IS NULL)"));
+        }
+        if (building) {
+            query = query.andWhereNot("building", null);
+        }
+        console.log(query.toQuery());
+        return toPromise(query.from("all_car_parks"));
     }
 
     public getAllLines(): Promise<any> {
-        return toPromise(knex.select(["osm_id", "name", st.asGeoJSON("way")])
-            .whereNotNull("name")
+        return toPromise(knex.select(["osm_id", "name", st.asGeoJSON("way")]).whereNotNull("name")
             .from("all_lines"));
     }
 

@@ -38,7 +38,11 @@ export class Server {
                 req.query.key,
                 req.query.type,
                 req.query.value,
-                req.query.parking));
+                req.query.parking,
+                !!Number(req.query.private),
+                !!Number(req.query.building),
+                !!Number(req.query.inMall)
+            ));
         });
         this.app.get("/lines", (req, res) => {
             Server.send(res, DbConnection.getAllLines());

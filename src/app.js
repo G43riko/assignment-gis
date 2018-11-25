@@ -132,7 +132,12 @@ const getTypeAndValue = (item) => {
         return ["office", item.office];
     } else if (item.man_made) {
         return ["man_made", item.man_made];
+    } else if (item.operator) {
+        return ["operator", item.operator];
     }
+
+
+    console.log("unknown type and value: ", item);
 };
 
 /*
@@ -194,6 +199,7 @@ window.switchParkings = () => {
 };
 
 window.updateParkings = () => {
+    updateResults();
     const parameters = {
         private: document.getElementById("privateCarParks").checked ? 1 : 0,
         building: document.getElementById("buildingOnly").checked ? 1 : 0,
@@ -997,14 +1003,22 @@ const mapOnLoad = () => {
     const parkingElement = document.querySelector("input.parking");
     parkingElement.disabled = maxDistance > 1000;
     const parking = parkingElement.value;
+    const selectedType = document.getElementById("inputItemType").value;
+    const valueElement = document.getElementById("inputItemValue");
     const parameters = {
         lat: center.coordinates[0],
         lon: center.coordinates[1],
         dist: maxDistance,
+        inMall: document.getElementById("inMall").checked ? 1 : 0,
+        private: document.getElementById("privateCarParks").checked ? 1 : 0,
+        building: document.getElementById("buildingOnly").checked ? 1 : 0,
         key: encodeURIComponent(document.querySelector("input.pattern").value),
-        type: document.getElementById("inputItemType").value,
-        value: document.getElementById("inputItemValue").value,
+        type: selectedType,
+        value: valueElement.value,
     };
+    if (!selectedType) {
+        valueElement.value = "";
+    }
     if (maxDistance <= 1000 && !isNaN(parking) && parking > 0 && parking < 1000) {
         parameters.parking = parking;
     }

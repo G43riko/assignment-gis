@@ -20,9 +20,9 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: Aplikácia umožnuje jednoduchú orientáciu v Oblasti bratislavy a okolia. 
-Umožnuje nájsť rozne zariadenia a budovy podla rôznych kritérií. Taktiež umožnuje vyhladať rôzne typ trás v Bratislava.
-Toto všetko je možné filtrovať jednak podla názvu ale aj podla typu čí vzdialenosti od určitého bodu
+**Application description**: Aplikácia umožnuje jednoduchú orientáciu v Oblasti Bratislavy a okolia. 
+Umožnuje nájsť rozne zariadenia a budovy podla rôznych kritérií. Taktiež umožnuje vyhladať rôzne typy trás.
+Toto všetko je možné filtrovať jednak podla názvu, podla typu čí vzdialenosti od určitého bodu alebo podla vzialenosti od najbližšieho parkoviska
 
 
 **Data source**: `open street map`

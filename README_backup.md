@@ -20,11 +20,8 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: Aplikácia umožnuje jednoduchú orientáciu v Oblasti bratislavy a okolia. 
-Umožnuje nájsť rozne zariadenia a budovy podla rôznych kritérií. Taktiež umožnuje vyhladať rôzne typ trás v Bratislava.
-Toto všetko je možné filtrovať jednak podla názvu ale aj podla typu čí vzdialenosti od určitého bodu
+**Application description**: `<fill in>`
 
+**Data source**: `<fill in>`
 
-**Data source**: `open street map`
-
-**Technologies used**: `Typescript, Javascript, NodeJS, MapboxGL, PostgreSQL, PostGIS`
+**Technologies used**: `<fill in>`

@@ -25,11 +25,32 @@ export class Server {
         this.app.get("/points", (req, res) => {
             Server.send(res, DbConnection.getAllPoints());
         });
+        this.app.get("/linesAround", (req, res) => {
+            Server.send(res, DbConnection.getLinesAround(parseFloat(req.query.lat),
+                parseFloat(req.query.lon),
+                parseFloat(req.query.dist),
+                req.query.route));
+        });
+        this.app.get("/pointsAround", (req, res) => {
+            Server.send(res, DbConnection.getPointsAround(parseFloat(req.query.lat),
+                parseFloat(req.query.lon),
+                parseFloat(req.query.dist),
+                req.query.key,
+                req.query.type,
+                req.query.value,
+                req.query.parking));
+        });
         this.app.get("/lines", (req, res) => {
             Server.send(res, DbConnection.getAllLines());
         });
+        this.app.get("/carParks", (req, res) => {
+            Server.send(res, DbConnection.getCarParks());
+        });
         this.app.get("/roads", (req, res) => {
             Server.send(res, DbConnection.getAllRoads());
+        });
+        this.app.get("/stats", (req, res) => {
+            Server.send(res, DbConnection.getStats());
         });
         this.app.get("/polygons", (req, res) => {
             Server.send(res, DbConnection.getAllPolygons());

@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <meta content='initial-scale=1,maximum-scale=1,user-scalable=no' name='viewport'/>
+    <script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet'/>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js"></script>
+
+    <!--<script src='https://api.mapbox.com/mapbox.js/plugins/turf/v2.0.2/turf.min.js'></script>-->
+    <script> src = "https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.js";</script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css" rel="stylesheet"/>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet'/>
+
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/leaflet.markercluster.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/MarkerCluster.css'
+          rel='stylesheet'/>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/MarkerCluster.Default.css'
+          rel='stylesheet'/>
+
     <style>
         body {
             margin: 0;
@@ -15,15 +28,131 @@
             overflow: hidden
         }
 
+        ul {
+            list-style: none;
+            padding: 5px;
+        }
+
         #map {
             position: absolute;
-            width: 100%;
+            left: 400px;
+            width: calc(100% - 400px);
             height: 100%;
+        }
+
+        .panel {
+            position: absolute;
+            width: 400px;
+            height: 100%;
+            background: antiquewhite;
+            border: 1px solid black;
+        }
+
+        .panel .header {
+            width: 100%;
+            background: aqua;
+            height: 130px;
+            cursor: pointer;
+            border-bottom: 1px solid black;
+        }
+
+        .panel .body {
+            box-sizing: border-box;
+            position: absolute;
+            overflow: auto;
+            height: calc(100% - 130px);
+        }
+
+        .button {
+            margin-top: 5px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        input:not([type=checkbox]), select {
+            height: 30px;
+            border: 1px solid blue;
+            border-radius: 6px;
+            line-height: 30px;
+            font-size: 25px;
+            width: 30%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .coordinates {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            position: absolute;
+            bottom: 20px;
+            right: 10px;
+            padding: 5px 10px;
+            margin: 0;
+            font-size: 11px;
+            line-height: 18px;
+            border-radius: 3px;
+            display: block;
+        }
+
+        input[type=number] {
+            width: 80px;
         }
     </style>
 </head>
 <body>
 <div id='map'></div>
+<pre class='coordinates' id='coordinates'></pre>
+<div class="panel">
+    <div class="header">
+        <div>
+            <input class="pattern" onchange="updateResults()" placeholder="Hladať" type="text">
+            <input class="distance" max="99999" min="0" onchange="updateResults()" type="number" value="200">M.
+            <label for="showClusters">Zobraziť clustre: </label>
+            <input checked id="showClusters" onchange="updateResults()" type="checkbox">
+        </div>
+        <div>
+            Max vzdialenosť:
+            <input class="parking" max="1000" min="0" onchange="updateResults()" type="number" value="0">M.
+            <label for="showCarParks">Zobraziť parkoviská: </label>
+            <input checked id="showCarParks" onchange="switchParkings(this.checked)" type="checkbox">
+        </div>
+        <div>
+            <select class="itemType" id="inputItemType" onchange="updateResults()">
+            </select>
+
+            <select class="itemValue" id="inputItemValue" onchange="updateResults()">
+            </select>
+        </div>
+        <div>
+
+            Zobraziť
+            <select id="inputRouteType" onchange="updateRoads()">
+                <option value="">Typ cesty</option>
+                <option value="bus">Bus</option>
+                <option value="bicycle">Kolo</option>
+                <option value="tram">Tram</option>
+                <option value="road">Road</option>
+                <option value="train">vlak</option>
+                <option value="trolleybus">Trolejbus</option>
+                <option value="railway">Železničná</option>
+                <option value="hiking">Turistika</option>
+                <option value="foot">Noha</option>
+                <option value="running">Beží</option>
+                <option value="disused">Nepoužívanými</option>
+                <option value="planned_hike">Planned_hike</option>
+                <option value="mtb">MTB</option>
+                <option value="pilgrimage">Púť</option>
+                <option value="ferry">Trajekt</option>
+            </select>
+            do vzdialenosti
+            <input class="roadDistance" max="99999" min="0" onchange="updateRoads()" type="number" value="1000">M.
+
+        </div>
+    </div>
+    <div class="body"></div>
+</div>
 <script src="/dist/bundle.js"></script>
 </body>
 </html>

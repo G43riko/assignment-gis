@@ -44,7 +44,8 @@ Po prejdení kurzorom myšli na trasu sa nám zobrazí okno ktoré obsahuje zák
 
 
 # Backend
-Backend je umplementovaný v jazyku Typescript a beží na NodeJS. Pre komunikáciu s databázov používa knižnicu Knex ktorá taktiež podporuje aj geodáta
+Backend je umplementovaný v jazyku Typescript a beží na NodeJS. Pre komunikáciu s databázov používa knižnicu Knex ktorá taktiež podporuje aj geodáta.
+Rozšírenie pre geodáta obsahuje viacero chýb preto bolo nutné niektore query písať ako raw query.
 
 # Database
 
@@ -58,11 +59,6 @@ Pre jednoduchšie prácu s ťabulky sme si vytvorili materializované pohlady kt
  - valid_points - obsahuje vyfiltrované body a taktiež index na názov(`name`), súradnice(`way`) a typ
  - valid_routes - obsahuje vyfiltrované cesty, obsahuje index na súradnice(`way`) a stĺpec 'route'
  - all_car_parks  - obsahuje všetky polygóny ktoré sú typu parking. Index je na súradnice (`way`)
-
-## Data
-
-Dáta sú priamo vyexportované s OpenStreetMap.
-Vyexportovaná časť zahŕňa Bratislavu zo širokým okolým.
 
 
 ## Api
@@ -94,6 +90,28 @@ Všetky body v okolý
 
 Všetky parkoviská
 
+## Data
+
+Dáta sú priamo vyexportované s OpenStreetMap.
+Vyexportovaná časť zahŕňa Bratislavu zo širokým okolým.
+
+## Indexy
+```sql
+
+CREATE extension pg_trgm;
+update pg_opclass set opcdefault = true where opcname='gin_trgm_ops'
+CREATE INDEX  valid_points_way_index ON valid_points USING gist(way);
+CREATE INDEX  valid_points_oldway_index ON valid_points USING gist(oldway);
+CREATE INDEX  valid_points_name_index ON valid_points USING gin (name);
+CREATE INDEX  valid_points_lower_name_index ON valid_points (lower(name));
+CREATE INDEX  valid_lines_way_index ON valid_lines USING gist(way);
+CREATE INDEX  valid_lines_oldway_index ON valid_lines USING gist(oldway);
+CREATE INDEX  valid_polygons_way_index ON valid_polygons USING gist(way);
+CREATE INDEX  valid_polygons_amenity_index ON valid_polygons (amenity);
+CREATE INDEX  valid_polygons_oldway_index ON valid_polygons USING gist(oldway);
+
+```
+
 #Scenáre
 
 ## Vyhladať všetky reštaurácie ktoré sa nechádzajú do 200 metrov od križovatky Bajkalská - prievozská
@@ -101,3 +119,9 @@ Všetky parkoviská
 ## Vyhladať všetky pekárne ktoré sú 1 km od autobusovej stanice mlinské nivy a do 50 metrov od nich sa nachdádza parkovisko
 
 ## Zobraziť všetky trasy trolejbusov do vzdialenosti 100 metrov od trhoviska miletičova
+
+![Image 1](images/gis1.png)
+![Image 2](images/gis2.png)
+![Image 3](images/gis3.png)
+![Image 4](images/gis4.png)
+![Image 5](images/gis5.png)

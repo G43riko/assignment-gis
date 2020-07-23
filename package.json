@@ -36,7 +36,7 @@
     "body-parser": "^1.18.3",
     "concurrently": "^4.0.1",
     "express": "^4.16.4",
-    "knex": "^0.15.2",
+    "knex": "^0.19.5",
     "knex-postgis": "0.7.0",
     "mapbox-gl": "^0.50.0",
     "nodemon": "^1.18.5",
